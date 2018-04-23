@@ -20,9 +20,12 @@ public class OracleDriver {
 	
 	public static void main(String[] args) {
 		
+		//Session session = HibernateUtil.getSessionFactory().openSession();
+		//HibernateUtil.getSessionFactory().getCurrentSession();
+
 		try {
-			DriverManager.getConnection("jdbc:oracle:thin:@cisc437.cppycbjtmhb4.us-east-1.rds.amazonaws.com:1521:ORCL","ProjectSpring2018","ProjectSpring2018");
-			System.out.println("Connection Successful!");
+			System.out.println("Connection: " + DriverManager.getConnection("jdbc:oracle:thin:@cisc437.cppycbjtmhb4.us-east-1.rds.amazonaws.com:1521:ORCL","ProjectSpring2018","ProjectSpring2018"));
+			System.out.println("Driver: " + DriverManager.getDriver("jdbc:oracle:thin:@cisc437.cppycbjtmhb4.us-east-1.rds.amazonaws.com:1521:ORCL"));
 		}
 		catch(Exception e){
 			e.printStackTrace();
