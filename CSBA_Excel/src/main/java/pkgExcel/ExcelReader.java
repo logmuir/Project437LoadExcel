@@ -38,7 +38,8 @@ public class ExcelReader {
 		String stat_value;
 		String stat_name;
 		ArrayList<String> statNames = new ArrayList<String>();//TODO: INITIALIZE NAMES 
-		int stat_start = 5; // first column in sheet that contains a stat.
+		int stat_start; // first column in sheet per row that contains a stat.
+		int stat_final; //final column in sheet per row that contains stat values to store
 
 		
 		//ITERATING SHEETS: while loop obtaining indiviual sheets from file
@@ -55,27 +56,39 @@ public class ExcelReader {
 				while (cellIterator.hasNext()) {
 					cell = cellIterator.next(); // obtain next cell
 					cellValue = dataFormatter.formatCellValue(cell);
-					if(rowCounter > 0) { //if we are in any row but the header row
+					if(rowCounter > 2) { //if we are in any row but the header row
 						//switch statement to differentiate between types in the cell
-						switch(cellValue) {
-							case "FIRST_NAME": 
-								first_name = cellValue;
-								break;
-							case "LAST_NAME": 
-								last_name = cellValue;
-								break;
-							case "GUID": 
-								GUID = cellValue;
-								break;
-							//TODO: ADD MORE CASES FOR POSITIONS
-							default:{
-								stat_value = cellValue;
-								stat_abbr = columnHeaders.get(columnCounter);
-								stat_name = statNames.get(columnCounter - statStart);
-							}
-						}//end Switch statement in the if statement
-					}else {//only enters statement for the first row in the sheet
+						if(rowCounter < stat_start) {
+							switch(cellValue) {
+								case "FIRST_NAME": 
+									first_name = cellValue;
+									break;
+								case "LAST_NAME": 
+									last_name = cellValue;
+									break;
+								case "GUID": 
+									GUID = cellValue;
+									break;
+									//TODO: ADD MORE CASES FOR POSITIONS
+								default:{
+									break;
+								}
+							}//end Switch statement in the if statement
+						}else {
+							stat_value = cellValue;
+							stat_abbr = columnHeaders.get(columnCounter);
+							stat_name = statNames.get(columnCounter - stat_start);
+						}
+					}else {//only enters statement for the first 3 rows in the sheet
+						if (rowCounter == 2) {//columns with the headers of the table
 						columnHeaders.add(cellValue);//add each header to the list of headers
+						}else if (rowCounter == 1) {//row containing stat locations
+							if(rowCounter == 0) {//location in excel with the start location of stat
+								stat_start = Integer.valueOf(cellValue);
+							}else if(rowCounter == 1) {//location of last stat in file
+								stat_final = Integer.valueOf(cellValue);
+							}
+						}
 					}//end else in 3rd while
 					
 				}//end third while (cells)
