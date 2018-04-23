@@ -74,10 +74,10 @@ public class ExcelReader {
 									break;
 								}
 							}//end Switch statement in the if statement
-						}else {
+						}else if(rowCounter < stat_final){
 							stat_value = cellValue;
 							stat_abbr = columnHeaders.get(columnCounter);
-							stat_name = statNames.get(columnCounter - stat_start);
+							//stat_name = statNames.get(columnCounter - stat_start);
 						}
 					}else {//only enters statement for the first 3 rows in the sheet
 						if (rowCounter == 2) {//columns with the headers of the table
