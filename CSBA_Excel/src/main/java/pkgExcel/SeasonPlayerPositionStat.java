@@ -7,6 +7,8 @@ public class SeasonPlayerPositionStat {
 	int player_id;
 	int position_id;
 	int stat_id;
+	int stat_value;
+	
 	public int getSeason_id() {
 		return season_id;
 	}
@@ -30,6 +32,12 @@ public class SeasonPlayerPositionStat {
 	}
 	public void setStat_id(int stat_id) {
 		this.stat_id = stat_id;
+	}
+	public int getStat_value() {
+		return stat_value;
+	}
+	public void setStat_value(int stat_value) {
+		this.stat_value = stat_value;
 	}
 	
 	

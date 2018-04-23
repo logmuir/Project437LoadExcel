@@ -4,6 +4,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ExcelReader {
@@ -14,11 +15,84 @@ public class ExcelReader {
 		// Creating a Workbook from an Excel file (.xls or .xlsx)
 		System.out.println(new File(".").getCanonicalPath());
 		Workbook workbook = WorkbookFactory.create(new File(SAMPLE_XLSX_FILE_PATH));
+		
+		
+	//TEMP CODE FOR PTOJECT
+		//initializing objects
+		Iterator<Sheet> sheetIterator = workbook.sheetIterator();
+		DataFormatter dataFormatter = new DataFormatter();
+		Iterator<Row> rowIterator; //used to iterate rows
+		Iterator<Cell> cellIterator; //used to iterate cells
+		Sheet sheet; //used to store current sheet to be processed
+		Cell cell; //temp storage for individual cells
+		String cellValue; //value from a cell cast as a String
+		int rowCounter = 0; //counter to determine which row we are on. primarily to store column headers. 
+		int columnCounter; //used to refer each cell to its specific header column
+		ArrayList<String> columnHeaders = new ArrayList<String>();
+		//player info to store
+		String first_name;
+		String last_name;
+		String GUID;
+		//stat info to store
+		String stat_abbr;
+		String stat_value;
+		String stat_name;
+		ArrayList<String> statNames = new ArrayList<String>();//TODO: INITIALIZE NAMES 
+		int stat_start = 5; // first column in sheet that contains a stat.
+
+		
+		//ITERATING SHEETS: while loop obtaining indiviual sheets from file
+		while (sheetIterator.hasNext()) {
+			sheet = sheetIterator.next(); //obtain next sheet
+			
+			// ITERATING ROWS: internal while loop to iterate over individual rows in a sheet
+			rowIterator = sheet.rowIterator();
+			while (rowIterator.hasNext()) {
+				Row row = rowIterator.next(); //obtain next row
+				
+				// ITERATING CELLS: 3rd sub while loop iterating over each cell in a row
+				cellIterator = row.cellIterator();
+				while (cellIterator.hasNext()) {
+					cell = cellIterator.next(); // obtain next cell
+					cellValue = dataFormatter.formatCellValue(cell);
+					if(rowCounter > 0) { //if we are in any row but the header row
+						//switch statement to differentiate between types in the cell
+						switch(cellValue) {
+							case "FIRST_NAME": 
+								first_name = cellValue;
+								break;
+							case "LAST_NAME": 
+								last_name = cellValue;
+								break;
+							case "GUID": 
+								GUID = cellValue;
+								break;
+							//TODO: ADD MORE CASES FOR POSITIONS
+							default:{
+								stat_value = cellValue;
+								stat_abbr = columnHeaders.get(columnCounter);
+								stat_name = statNames.get(columnCounter - statStart);
+							}
+						}//end Switch statement in the if statement
+					}else {//only enters statement for the first row in the sheet
+						columnHeaders.add(cellValue);//add each header to the list of headers
+					}//end else in 3rd while
+					
+				}//end third while (cells)
+				columnCounter++;
+			}//end second while (rows)
+			rowCounter++;
+			
+		}//end first while (sheets)
+		
+	//END TEMP CODE FOR PROJECT
+		
+		
 
 		// Retrieving the number of sheets in the Workbook
 		System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
 
-		/*
+		/*  
 		 * ============================================================= Iterating over
 		 * all the sheets in the workbook (Multiple ways)
 		 * =============================================================
