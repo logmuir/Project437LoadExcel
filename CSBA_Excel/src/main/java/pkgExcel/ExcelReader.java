@@ -27,24 +27,24 @@ public class ExcelReader {
 		Cell cell; //temp storage for individual cells
 		String cellValue; //value from a cell cast as a String
 		int rowCounter = 0; //counter to determine which row we are on. primarily to store column headers. 
-		int columnCounter; //used to refer each cell to its specific header column
+		int columnCounter = 0; //used to refer each cell to its specific header column
 		ArrayList<String> columnHeaders = new ArrayList<String>();
 		//player info to store
-		String first_name;
-		String last_name;
-		String GUID;
+		String first_name = "";
+		String last_name = "";
+		String GUID = "";
 		int player_id = 0;//TODO: temp int for id
 		//stat info to store
 		int stat_id = 0; //TODO: temp int for id check for actual id through oracle.
-		String stat_abbr;
-		String stat_value;
-		String stat_name;
-		String stat_cast_as;
+		String stat_abbr = "";
+		String stat_value = "";
+		String stat_name = "";
+		String stat_cast_as = "";// TODO: also a temp (set in the actual code)
 		ArrayList<String> statNames = new ArrayList<String>();//INITIALIZE NAMES 
 		ArrayList<String> statValues = new ArrayList<String>();//to store values of stat from each row
 		ArrayList<Stat> playerStats = new ArrayList<Stat>();  // to store each stat for a row
-		int stat_start; // first column in sheet per row that contains a stat.
-		int stat_final; //final column in sheet per row that contains stat values to store
+		int stat_start = 0; // first column in sheet per row that contains a stat.
+		int stat_final = 0; //final column in sheet per row that contains stat values to store
 		//position info to store
 
 		
@@ -106,93 +106,16 @@ public class ExcelReader {
 				}//end third while (cells)
 				columnCounter++;
 			}//end second while (rows)
+			//TODO: get player id using player GUID or generated one for new players
 			//create player from player info in row gathered
 			Player tempPlayer = new Player(player_id, GUID, first_name, last_name);
+			//TODO: create season* classes
+			//TODO: add all classes to the database
 			rowCounter++;
 			
 		}//end first while (sheets)
 		
 	//END TEMP CODE FOR PROJECT
-		
-		
-
-		// Retrieving the number of sheets in the Workbook
-		System.out.println("Workbook has " + workbook.getNumberOfSheets() + " Sheets : ");
-
-		/*  
-		 * ============================================================= Iterating over
-		 * all the sheets in the workbook (Multiple ways)
-		 * =============================================================
-		 */
-
-		// 1. You can obtain a sheetIterator and iterate over it
-		Iterator<Sheet> sheetIterator = workbook.sheetIterator();
-		System.out.println("Retrieving Sheets using Iterator");
-		while (sheetIterator.hasNext()) {
-			Sheet sheet = sheetIterator.next();
-			System.out.println("=> " + sheet.getSheetName());
-		}
-
-		// 2. Or you can use a for-each loop
-		System.out.println("Retrieving Sheets using for-each loop");
-		for (Sheet sheet : workbook) {
-			System.out.println("=> " + sheet.getSheetName());
-		}
-
-		// 3. Or you can use a Java 8 forEach with lambda
-		System.out.println("Retrieving Sheets using Java 8 forEach with lambda");
-		workbook.forEach(sheet -> {
-			System.out.println("=> " + sheet.getSheetName());
-		});
-
-		/*
-		 * ================================================================== Iterating
-		 * over all the rows and columns in a Sheet (Multiple ways)
-		 * ==================================================================
-		 */
-
-		// Getting the Sheet at index zero
-		Sheet sheet = workbook.getSheetAt(0);
-
-		// Create a DataFormatter to format and get each cell's value as String
-		DataFormatter dataFormatter = new DataFormatter();
-
-		// 1. You can obtain a rowIterator and columnIterator and iterate over them
-		System.out.println("\n\nIterating over Rows and Columns using Iterator\n");
-		Iterator<Row> rowIterator = sheet.rowIterator();
-		while (rowIterator.hasNext()) {
-			Row row = rowIterator.next();
-
-			// Now let's iterate over the columns of the current row
-			Iterator<Cell> cellIterator = row.cellIterator();
-
-			while (cellIterator.hasNext()) {
-				Cell cell = cellIterator.next();
-				String cellValue = dataFormatter.formatCellValue(cell);
-				System.out.print(cellValue + "\t");
-			}
-			System.out.println();
-		}
-
-		// 2. Or you can use a for-each loop to iterate over the rows and columns
-		System.out.println("\n\nIterating over Rows and Columns using for-each loop\n");
-		for (Row row : sheet) {
-			for (Cell cell : row) {
-				String cellValue = dataFormatter.formatCellValue(cell);
-				System.out.print(cellValue + "\t");
-			}
-			System.out.println();
-		}
-
-		// 3. Or you can use Java 8 forEach loop with lambda
-		System.out.println("\n\nIterating over Rows and Columns using Java 8 forEach with lambda\n");
-		sheet.forEach(row -> {
-			row.forEach(cell -> {
-				String cellValue = dataFormatter.formatCellValue(cell);
-				System.out.print(cellValue + "\t");
-			});
-			System.out.println();
-		});
 
 		// Closing the workbook
 		workbook.close();
