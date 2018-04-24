@@ -2,7 +2,7 @@ package pkgExcel;
 
 public class Player {
 	
-	int player_id;
+	int player_id;//dont need
 	String player_guid;
 	String first_name;
 	String last_name;

@@ -2,17 +2,18 @@ package pkgExcel;
 
 public class Stat {
 
-	int stat_id;
+	int stat_id;//dont need
 	String stat_name;
 	String stat_abbr;
 	String cast_as;
 	
-	public Stat(int stat_id, String stat_name, String stat_abbr, String cast_as) {
-		this.stat_id = stat_id;
+	public Stat(String stat_name, String stat_abbr, String cast_as) {
 		this.stat_name = stat_name;
 		this.stat_abbr = stat_abbr;
 		this.cast_as = cast_as;
 	}
+	
+	public Stat() {}
 	
 	public int getStat_id() {
 		return stat_id;

@@ -86,7 +86,7 @@ public class ExcelReader {
 							stat_abbr = columnHeaders.get(columnCounter);
 							stat_name = statNames.get(columnCounter - stat_start);
 							stat_cast_as = "int"; //TODO: get actual casts from excel
-							Stat tempStat = new Stat(stat_id, stat_name, stat_abbr, stat_cast_as);
+							Stat tempStat = new Stat(stat_name, stat_abbr, stat_cast_as);
 							playerStats.add(tempStat);//add new stat to a list for each row
 						}
 					}else {//only enters statement for the first 3 rows in the sheet
