@@ -9,6 +9,16 @@ public class SeasonPlayerPositionStat {
 	int stat_id;
 	int stat_value;
 	
+	
+	public SeasonPlayerPositionStat(int season_id, int player_id, int position_id, int stat_id, int stat_value) {
+		super();
+		this.season_id = season_id;
+		this.player_id = player_id;
+		this.position_id = position_id;
+		this.stat_id = stat_id;
+		this.stat_value = stat_value;
+	}
+	
 	public int getSeason_id() {
 		return season_id;
 	}

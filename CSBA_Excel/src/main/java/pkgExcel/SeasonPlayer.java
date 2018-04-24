@@ -6,6 +6,13 @@ public class SeasonPlayer {
 	int player_id;
 	
 
+	
+	public SeasonPlayer(int season_id, int player_id) {
+		super();
+		this.season_id = season_id;
+		this.player_id = player_id;
+	}
+	
 	public int getSeason_id() {
 		return season_id;
 	}

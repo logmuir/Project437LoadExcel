@@ -7,6 +7,15 @@ public class Player {
 	String first_name;
 	String last_name;
 	
+	
+	
+	public Player(int player_id, String player_guid, String first_name, String last_name) {
+		this.player_id = player_id;
+		this.player_guid = player_guid;
+		this.first_name = first_name;
+		this.last_name = last_name;
+	}
+	
 	public int getPlayer_id() {
 		return player_id;
 	}

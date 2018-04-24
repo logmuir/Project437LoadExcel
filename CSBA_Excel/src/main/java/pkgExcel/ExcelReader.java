@@ -33,13 +33,19 @@ public class ExcelReader {
 		String first_name;
 		String last_name;
 		String GUID;
+		int player_id = 0;//TODO: temp int for id
 		//stat info to store
+		int stat_id = 0; //TODO: temp int for id check for actual id through oracle.
 		String stat_abbr;
 		String stat_value;
 		String stat_name;
-		ArrayList<String> statNames = new ArrayList<String>();//TODO: INITIALIZE NAMES 
+		String stat_cast_as;
+		ArrayList<String> statNames = new ArrayList<String>();//INITIALIZE NAMES 
+		ArrayList<String> statValues = new ArrayList<String>();//to store values of stat from each row
+		ArrayList<Stat> playerStats = new ArrayList<Stat>();  // to store each stat for a row
 		int stat_start; // first column in sheet per row that contains a stat.
 		int stat_final; //final column in sheet per row that contains stat values to store
+		//position info to store
 
 		
 		//ITERATING SHEETS: while loop obtaining indiviual sheets from file
@@ -75,18 +81,24 @@ public class ExcelReader {
 								}
 							}//end Switch statement in the if statement
 						}else if(rowCounter < stat_final){
-							stat_value = cellValue;
+							stat_value = cellValue; //save each stat value in a list
+							statValues.add(stat_value);
 							stat_abbr = columnHeaders.get(columnCounter);
-							//stat_name = statNames.get(columnCounter - stat_start);
+							stat_name = statNames.get(columnCounter - stat_start);
+							stat_cast_as = "int"; //TODO: get actual casts from excel
+							Stat tempStat = new Stat(stat_id, stat_name, stat_abbr, stat_cast_as);
+							playerStats.add(tempStat);//add new stat to a list for each row
 						}
 					}else {//only enters statement for the first 3 rows in the sheet
 						if (rowCounter == 2) {//columns with the headers of the table
-						columnHeaders.add(cellValue);//add each header to the list of headers
+							columnHeaders.add(cellValue);//add each header to the list of headers
 						}else if (rowCounter == 1) {//row containing stat locations
-							if(rowCounter == 0) {//location in excel with the start location of stat
+							if(columnCounter == 0) {//location in excel with the start location of stat
 								stat_start = Integer.valueOf(cellValue);
-							}else if(rowCounter == 1) {//location of last stat in file
+							}else if(columnCounter == 1) {//location of last stat in file
 								stat_final = Integer.valueOf(cellValue);
+							}else if(columnCounter > 2){
+								statNames.add(cellValue);
 							}
 						}
 					}//end else in 3rd while
@@ -94,6 +106,8 @@ public class ExcelReader {
 				}//end third while (cells)
 				columnCounter++;
 			}//end second while (rows)
+			//create player from player info in row gathered
+			Player tempPlayer = new Player(player_id, GUID, first_name, last_name);
 			rowCounter++;
 			
 		}//end first while (sheets)
