@@ -17,7 +17,7 @@ public class ExcelReader {
 		Workbook workbook = WorkbookFactory.create(new File(SAMPLE_XLSX_FILE_PATH));
 		
 		
-	//TEMP CODE FOR PTOJECT
+	//TEMP CODE FOR PROJECT
 		//initializing objects
 		Iterator<Sheet> sheetIterator = workbook.sheetIterator();
 		DataFormatter dataFormatter = new DataFormatter();
@@ -48,7 +48,7 @@ public class ExcelReader {
 		//position info to store
 
 		
-		//ITERATING SHEETS: while loop obtaining indiviual sheets from file
+		//ITERATING SHEETS: while loop obtaining individual sheets from file
 		while (sheetIterator.hasNext()) {
 			sheet = sheetIterator.next(); //obtain next sheet
 			
