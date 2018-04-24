@@ -65,7 +65,7 @@ public class ExcelReader {
 					if(rowCounter > 2) { //if we are in any row but the header row
 						//switch statement to differentiate between types in the cell
 						if(rowCounter < stat_start) {
-							switch(cellValue) {
+							switch(columnHeaders.get(columnCounter)) {
 								case "FIRST_NAME": 
 									first_name = cellValue;
 									break;
