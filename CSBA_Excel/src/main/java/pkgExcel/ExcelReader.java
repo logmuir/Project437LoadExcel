@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ExcelReader {
-	public static final String SAMPLE_XLSX_FILE_PATH = "./sample-xlsx-file.xlsx";
+	public static final String SAMPLE_XLSX_FILE_PATH = "./StatData.xlsx";
 
 	public static void main(String[] args) throws IOException, InvalidFormatException {
 
@@ -41,12 +41,120 @@ public class ExcelReader {
 		String stat_name = "";
 		String stat_cast_as = "";// TODO: also a temp (set in the actual code)
 		ArrayList<String> statNames = new ArrayList<String>();//INITIALIZE NAMES 
-		ArrayList<String> statValues = new ArrayList<String>();//to store values of stat from each row
+		ArrayList<String> statAbbrs = new ArrayList<String>();//stores abbrs
+		ArrayList<String> statCastAsValues = new ArrayList<String>();
 		ArrayList<Stat> playerStats = new ArrayList<Stat>();  // to store each stat for a row
 		int stat_start = 0; // first column in sheet per row that contains a stat.
 		int stat_final = 0; //final column in sheet per row that contains stat values to store
 		//position info to store
+		int positionIndex = 0;
+		//season info to store
+		String season_name = "";
+		String season_start_date = "";
+		String season_end_date = "";
+		//sheet info
+		int sheetCounter = 0;
+		//sequence info
+		String player_seq_init = "CREATE SEQUENCE PLAYER_SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999999 MINVALUE 0;";
+		String stat_seq_init = "CREATE SEQUENCE STAT_SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999999 MINVALUE 0;";
+		String position_seq_init = "CREATE SEQUENCE POSITION_SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999999 MINVALUE 0;";
+		String season_seq_init = "CREATE SEQUENCE SEASON_SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999999 MINVALUE 0;";
+		String player_seq = "PLAYER_SEQ.nextval";
+		String stat_seq = "STAT_SEQ.nextval";
+		String position_seq = "POSITION_SEQ.nextval";
+		String season_seq = "SEASON_SEQ.nextval";
+		
+		//PRINT SQL SEQUENCE INIT
+		System.out.println(season_seq_init);
+		System.out.println(player_seq_init);
+		System.out.println(stat_seq_init);
+		System.out.println(position_seq_init);
+		
+		while (sheetIterator.hasNext()) {
+			if(sheetCounter == 1) {
+				String seasonPrint = "\ninsert into season \n(season_id,start_date,end_date,seasonname) \nvalues \n"
+						+ "(" + season_seq + "," + season_start_date + "," + season_end_date + "," + "'" + "Season " + season_name + "');\n";
+				System.out.println(seasonPrint);
+			}
+			sheet = sheetIterator.next(); //obtain next sheet
+			// ITERATING ROWS: internal while loop to iterate over individual rows in a sheet
+			rowIterator = sheet.rowIterator();
+			rowCounter = 0;
+			while (rowIterator.hasNext()) {
+				Row row = rowIterator.next(); //obtain next row
+				
+				// ITERATING CELLS: 3rd sub while loop iterating over each cell in a row
+				cellIterator = row.cellIterator();
+				columnCounter = 0;
+				while (cellIterator.hasNext()) {
+					cell = cellIterator.next(); // obtain next cell
+					cellValue = dataFormatter.formatCellValue(cell);
+					if(sheetCounter == 0) {//Only enters when on season sheet
+						if(rowCounter == 1) {
+							switch(columnCounter) {
+								case 0:
+									season_name = cellValue;
+									break;
+								case 1:
+									season_start_date = cellValue;
+									break;
+								case 2:
+									season_end_date = cellValue;
+									break;
+							}//end switch
+						}else{//end if rowCounter == 1
+							
+						}
+					}else{//end if sheetCounter == 0
+						//PRINT FOR STATS
+						if(rowCounter == 3 && columnCounter == 0) {
+							for(int i = 0; i < statNames.size(); i++) {
+								String statPrint = "\ninsert into stat \n(stat_id,stat_name,stat_abbr,cast_as) \nvalues \n"
+										+ "(" + stat_seq + ",'" + statNames.get(i) + "','" + statAbbrs.get(i) + "'," + statCastAsValues.get(i) + ");\n";
+								System.out.println(statPrint);
+							}
+						}
+						//END PRINT FOR STATS
+					//NOW ON SHEET 1 AND 2
+						if(rowCounter == 0) {
+							if(columnCounter == 0) {
+								stat_start = Integer.valueOf(cellValue);
+								positionIndex = stat_start - 1;
+							}else if(columnCounter == 1) {
+								stat_final = Integer.valueOf(cellValue);
+							}else if(columnCounter >= stat_start) {
+								statCastAsValues.add(cellValue);
+							}
+						}else if (rowCounter == 1 && columnCounter >= stat_start && columnCounter <= stat_final) {
+							statNames.add(cellValue);
+						}else if (rowCounter == 2 && columnCounter >= stat_start && columnCounter <= stat_final) {
+							statAbbrs.add(cellValue);
+						}else{//now we have entered data rows
+							if(columnCounter == 0) {
+								first_name = cellValue;
+							}else if(columnCounter == 1) {
+								last_name = cellValue;
+							}else if(columnCounter == 2) {
+								GUID = cellValue;
+							}else {
+								
+							}
+						}
+					}
+					
+					columnCounter++;
+					}
+				// print SQL FOR STAT INSERTS
+				
+				//PRINT SQL FOR PLAYER INSERTS
+				
+				//PRINT
+				rowCounter++;
+				}
+			sheetCounter++;
+			}
 
+		/*
 		
 		//ITERATING SHEETS: while loop obtaining individual sheets from file
 		while (sheetIterator.hasNext()) {
@@ -116,6 +224,8 @@ public class ExcelReader {
 		}//end first while (sheets)
 		
 	//END TEMP CODE FOR PROJECT
+	 * 
+	 */
 
 		// Closing the workbook
 		workbook.close();
