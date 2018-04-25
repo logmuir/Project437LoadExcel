@@ -39,7 +39,7 @@ public class ExcelReader {
 		String stat_abbr = "";
 		String stat_value = "";
 		String stat_name = "";
-		String stat_cast_as = "";// TODO: also a temp (set in the actual code)
+		String stat_position = "";
 		ArrayList<String> statNames = new ArrayList<String>();//INITIALIZE NAMES 
 		ArrayList<String> statAbbrs = new ArrayList<String>();//stores abbrs
 		ArrayList<String> statCastAsValues = new ArrayList<String>();
@@ -48,6 +48,7 @@ public class ExcelReader {
 		int stat_final = 0; //final column in sheet per row that contains stat values to store
 		//position info to store
 		int positionIndex = 0;
+		ArrayList<String> positionsFound = new ArrayList<String>();
 		//season info to store
 		String season_name = "";
 		String season_start_date = "";
@@ -55,14 +56,18 @@ public class ExcelReader {
 		//sheet info
 		int sheetCounter = 0;
 		//sequence info
-		String player_seq_init = "CREATE SEQUENCE PLAYER_SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999999 MINVALUE 0;";
-		String stat_seq_init = "CREATE SEQUENCE STAT_SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999999 MINVALUE 0;";
-		String position_seq_init = "CREATE SEQUENCE POSITION_SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999999 MINVALUE 0;";
-		String season_seq_init = "CREATE SEQUENCE SEASON_SEQ INCREMENT BY 1 START WITH 1 MAXVALUE 999999999999 MINVALUE 0;";
+		String player_seq_init = "CREATE SEQUENCE PLAYER_SEQ INCREMENT BY 1 START WITH 0 MAXVALUE 999999999999 MINVALUE 0;";
+		String stat_seq_init = "CREATE SEQUENCE STAT_SEQ INCREMENT BY 1 START WITH 0 MAXVALUE 999999999999 MINVALUE 0;";
+		String position_seq_init = "CREATE SEQUENCE POSITION_SEQ INCREMENT BY 1 START WITH 0 MAXVALUE 999999999999 MINVALUE 0;";
+		String season_seq_init = "CREATE SEQUENCE SEASON_SEQ INCREMENT BY 1 START WITH 0 MAXVALUE 999999999999 MINVALUE 0;";
 		String player_seq = "PLAYER_SEQ.nextval";
 		String stat_seq = "STAT_SEQ.nextval";
 		String position_seq = "POSITION_SEQ.nextval";
 		String season_seq = "SEASON_SEQ.nextval";
+		int playerSeqCounter = 0;
+		int statSeqCounter = 0;
+		int positionSeqCounter = 0;
+		int seasonSeqCounter = 0;
 		
 		//PRINT SQL SEQUENCE INIT
 		System.out.println(season_seq_init);
@@ -73,8 +78,9 @@ public class ExcelReader {
 		while (sheetIterator.hasNext()) {
 			if(sheetCounter == 1) {
 				String seasonPrint = "\ninsert into season \n(season_id,start_date,end_date,seasonname) \nvalues \n"
-						+ "(" + season_seq + "," + season_start_date + "," + season_end_date + "," + "'" + "Season " + season_name + "');\n";
+						+ "(" + season_seq + "," + season_start_date + "," + season_end_date + "," + "'" + "Season " + season_name + "');";
 				System.out.println(seasonPrint);
+				seasonSeqCounter++;
 			}
 			sheet = sheetIterator.next(); //obtain next sheet
 			// ITERATING ROWS: internal while loop to iterate over individual rows in a sheet
@@ -110,7 +116,7 @@ public class ExcelReader {
 						if(rowCounter == 3 && columnCounter == 0) {
 							for(int i = 0; i < statNames.size(); i++) {
 								String statPrint = "\ninsert into stat \n(stat_id,stat_name,stat_abbr,cast_as) \nvalues \n"
-										+ "(" + stat_seq + ",'" + statNames.get(i) + "','" + statAbbrs.get(i) + "'," + statCastAsValues.get(i) + ");\n";
+										+ "(" + stat_seq + ",'" + statNames.get(i) + "','" + statAbbrs.get(i) + "'," + statCastAsValues.get(i) + ");";
 								System.out.println(statPrint);
 							}
 						}
@@ -129,7 +135,7 @@ public class ExcelReader {
 							statNames.add(cellValue);
 						}else if (rowCounter == 2 && columnCounter >= stat_start && columnCounter <= stat_final) {
 							statAbbrs.add(cellValue);
-						}else{//now we have entered data rows
+						}else if (rowCounter >= 3){//now we have entered data rows
 							if(columnCounter == 0) {
 								first_name = cellValue;
 							}else if(columnCounter == 1) {
@@ -137,11 +143,83 @@ public class ExcelReader {
 							}else if(columnCounter == 2) {
 								GUID = cellValue;
 							}else {
+								if(columnCounter == 3) {
+									//PRINTING PLAYER AND POSITION AND SEASON
+									String playerPrint = "\ninsert into player \n(player_id,player_guid,first_name,last_name) \nvalues \n"
+											+ "(" + player_seq + "," + GUID + ",'" + first_name + "','" + last_name + "');";
+									System.out.println(playerPrint);
+									stat_position = cellValue;
+									if(sheetCounter == 1 && !positionsFound.contains(cellValue)) {//only for pitchers
+										String positionPrint = "\ninsert into position \n(pos_id,pos_num,pos_name,postypeid) \nvalues \n"
+												+ "(" + position_seq + "," + 1 + ",'" + cellValue + "'," + 2 + ");";
+										System.out.println(positionPrint);
+										positionsFound.add(cellValue);
+									}else if(sheetCounter == 2 && !positionsFound.contains(cellValue)) {
+										int positionNum = 0;
+										switch(cellValue) {
+											case "C":
+												positionNum = 2;
+												break;
+											case "1B":
+												positionNum = 3;
+												break;
+											case "2B":
+												positionNum = 4;
+												break;
+											case "3B":
+												positionNum = 5;
+												break;
+											case "SS":
+												positionNum = 6;
+												break;
+											case "RF":
+												positionNum = 9;
+												break;
+											case "CF":
+												positionNum = 8;
+												break;
+											case "LF":
+												positionNum = 7;
+												break;
+										}//end switch
+										String positionPrint = "\ninsert into position \n(pos_id,pos_num,pos_name,postypeid) \nvalues \n"
+												+ "(" + position_seq + "," + positionNum + ",'" + cellValue + "'," + 1 + ");";
+										System.out.println(positionPrint);
+										positionsFound.add(cellValue);
+									}
+									//printing seasonPlayer
+									String sPPrint = "\ninsert into SeasonPlayer \n(season_id,player_id) \nvalues \n"
+											+ "(" + 0 + "," + playerSeqCounter + ");";
+									System.out.println(sPPrint);
+									//printing sPP
 								
+									for(int i = 0; i < positionsFound.size(); i++){
+										if(positionsFound.get(i)==cellValue) {
+											positionSeqCounter = i;
+										}
+									}
+									
+									String sPPPrint = "\ninsert into SeasonPlayerPosition \n(season_id,player_id,posid) \nvalues \n"
+											+ "(" + 0 + "," + playerSeqCounter + "," + positionSeqCounter + ");";
+									System.out.println(sPPPrint);
+									//increment after all prints done for a row
+									
+								}
 							}
 						}
 					}
-					
+					if(columnCounter == stat_start-1) {
+						for(int i = 0; i < positionsFound.size(); i++){
+							if(positionsFound.get(i)==cellValue) {
+								positionSeqCounter = i;
+							}
+						}
+					}
+					if(columnCounter >= stat_start) {
+						String sPPSPrint = "\ninsert into SeasonPlayerPositionStat \n(season_id,player_id,posid,stat_id,stat_value) \nvalues \n"
+								+ "(" + 0 + "," + playerSeqCounter + "," + positionSeqCounter + "," + (columnCounter - stat_start) + "," + cellValue + ");";
+						System.out.println(sPPSPrint);
+					}
 					columnCounter++;
 					}
 				// print SQL FOR STAT INSERTS
@@ -149,6 +227,9 @@ public class ExcelReader {
 				//PRINT SQL FOR PLAYER INSERTS
 				
 				//PRINT
+				if(rowCounter > 2) {
+					playerSeqCounter++;
+				}
 				rowCounter++;
 				}
 			sheetCounter++;
