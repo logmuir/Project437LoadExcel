@@ -221,14 +221,14 @@ public class ExcelReader {
 							}
 						}
 					}
-					if(columnCounter == stat_start-1) {
+					if(columnCounter == stat_start-1 && rowCounter>2) {
 						for(int i = 0; i < positionsFound.size(); i++){
 							if(positionsFound.get(i)==cellValue) {
 								positionSeqCounter = i;
 							}
 						}
 					}
-					if(columnCounter >= stat_start) {
+					if(columnCounter >= stat_start && rowCounter>2) {
 						String sPPSPrint = "\ninsert into SeasonPlayerPositionStat \n(season_id,player_id,posid,stat_id,stat_value) \nvalues \n"
 								+ "(" + 0 + "," + playerSeqCounter + "," + positionSeqCounter + "," + (columnCounter - stat_start) + "," + cellValue + ");";
 						System.out.println(sPPSPrint);
