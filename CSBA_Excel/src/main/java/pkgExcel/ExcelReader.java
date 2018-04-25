@@ -230,7 +230,7 @@ public class ExcelReader {
 					}
 					if(columnCounter >= stat_start && rowCounter>2) {
 						String sPPSPrint = "\ninsert into SeasonPlayerPositionStat \n(season_id,player_id,posid,stat_id,stat_value) \nvalues \n"
-								+ "(" + 0 + "," + playerSeqCounter + "," + positionSeqCounter + "," + (columnCounter - stat_start) + "," + cellValue + ");";
+								+ "(" + 0 + "," + playerSeqCounter + "," + positionSeqCounter + "," + (columnCounter - stat_start) + ",(select CAST( '" + cellValue  + "' AS " + statCastAsValues.get(columnCounter - stat_start) + ") from dual;)" + ");";                                   
 						System.out.println(sPPSPrint);
 						out.println(sPPSPrint);
 					}
