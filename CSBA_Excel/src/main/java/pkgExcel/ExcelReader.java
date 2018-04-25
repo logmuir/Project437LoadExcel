@@ -4,20 +4,26 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ExcelReader {
 	public static final String SAMPLE_XLSX_FILE_PATH = "./StatData.xlsx";
 
+
 	public static void main(String[] args) throws IOException, InvalidFormatException {
 
 		// Creating a Workbook from an Excel file (.xls or .xlsx)
 		System.out.println(new File(".").getCanonicalPath());
 		Workbook workbook = WorkbookFactory.create(new File(SAMPLE_XLSX_FILE_PATH));
-		
-		
-	//TEMP CODE FOR PROJECT
+
+
+		//Out file for printer writer
+		PrintWriter out = new PrintWriter("LoadStatementsSpring2018.txt");
+
+
+		//TEMP CODE FOR PROJECT
 		//initializing objects
 		Iterator<Sheet> sheetIterator = workbook.sheetIterator();
 		DataFormatter dataFormatter = new DataFormatter();
@@ -68,18 +74,19 @@ public class ExcelReader {
 		int statSeqCounter = 0;
 		int positionSeqCounter = 0;
 		int seasonSeqCounter = 0;
-		
+
 		//PRINT SQL SEQUENCE INIT
 		System.out.println(season_seq_init);
 		System.out.println(player_seq_init);
 		System.out.println(stat_seq_init);
 		System.out.println(position_seq_init);
-		
+
 		while (sheetIterator.hasNext()) {
 			if(sheetCounter == 1) {
 				String seasonPrint = "\ninsert into season \n(season_id,start_date,end_date,seasonname) \nvalues \n"
 						+ "(" + season_seq + "," + season_start_date + "," + season_end_date + "," + "'" + "Season " + season_name + "');";
 				System.out.println(seasonPrint);
+				out.println(seasonPrint);
 				seasonSeqCounter++;
 			}
 			sheet = sheetIterator.next(); //obtain next sheet
@@ -88,7 +95,7 @@ public class ExcelReader {
 			rowCounter = 0;
 			while (rowIterator.hasNext()) {
 				Row row = rowIterator.next(); //obtain next row
-				
+
 				// ITERATING CELLS: 3rd sub while loop iterating over each cell in a row
 				cellIterator = row.cellIterator();
 				columnCounter = 0;
@@ -98,18 +105,18 @@ public class ExcelReader {
 					if(sheetCounter == 0) {//Only enters when on season sheet
 						if(rowCounter == 1) {
 							switch(columnCounter) {
-								case 0:
-									season_name = cellValue;
-									break;
-								case 1:
-									season_start_date = cellValue;
-									break;
-								case 2:
-									season_end_date = cellValue;
-									break;
+							case 0:
+								season_name = cellValue;
+								break;
+							case 1:
+								season_start_date = cellValue;
+								break;
+							case 2:
+								season_end_date = cellValue;
+								break;
 							}//end switch
 						}else{//end if rowCounter == 1
-							
+
 						}
 					}else{//end if sheetCounter == 0
 						//PRINT FOR STATS
@@ -118,10 +125,11 @@ public class ExcelReader {
 								String statPrint = "\ninsert into stat \n(stat_id,stat_name,stat_abbr,cast_as) \nvalues \n"
 										+ "(" + stat_seq + ",'" + statNames.get(i) + "','" + statAbbrs.get(i) + "'," + statCastAsValues.get(i) + ");";
 								System.out.println(statPrint);
+								out.println(statPrint);
 							}
 						}
 						//END PRINT FOR STATS
-					//NOW ON SHEET 1 AND 2
+						//NOW ON SHEET 1 AND 2
 						if(rowCounter == 0) {
 							if(columnCounter == 0) {
 								stat_start = Integer.valueOf(cellValue);
@@ -148,62 +156,67 @@ public class ExcelReader {
 									String playerPrint = "\ninsert into player \n(player_id,player_guid,first_name,last_name) \nvalues \n"
 											+ "(" + player_seq + "," + GUID + ",'" + first_name + "','" + last_name + "');";
 									System.out.println(playerPrint);
+									out.println(playerPrint);
 									stat_position = cellValue;
 									if(sheetCounter == 1 && !positionsFound.contains(cellValue)) {//only for pitchers
 										String positionPrint = "\ninsert into position \n(pos_id,pos_num,pos_name,postypeid) \nvalues \n"
 												+ "(" + position_seq + "," + 1 + ",'" + cellValue + "'," + 2 + ");";
 										System.out.println(positionPrint);
+										out.println(positionPrint);
 										positionsFound.add(cellValue);
 									}else if(sheetCounter == 2 && !positionsFound.contains(cellValue)) {
 										int positionNum = 0;
 										switch(cellValue) {
-											case "C":
-												positionNum = 2;
-												break;
-											case "1B":
-												positionNum = 3;
-												break;
-											case "2B":
-												positionNum = 4;
-												break;
-											case "3B":
-												positionNum = 5;
-												break;
-											case "SS":
-												positionNum = 6;
-												break;
-											case "RF":
-												positionNum = 9;
-												break;
-											case "CF":
-												positionNum = 8;
-												break;
-											case "LF":
-												positionNum = 7;
-												break;
+										case "C":
+											positionNum = 2;
+											break;
+										case "1B":
+											positionNum = 3;
+											break;
+										case "2B":
+											positionNum = 4;
+											break;
+										case "3B":
+											positionNum = 5;
+											break;
+										case "SS":
+											positionNum = 6;
+											break;
+										case "RF":
+											positionNum = 9;
+											break;
+										case "CF":
+											positionNum = 8;
+											break;
+										case "LF":
+											positionNum = 7;
+											break;
 										}//end switch
 										String positionPrint = "\ninsert into position \n(pos_id,pos_num,pos_name,postypeid) \nvalues \n"
 												+ "(" + position_seq + "," + positionNum + ",'" + cellValue + "'," + 1 + ");";
 										System.out.println(positionPrint);
+										out.println(positionPrint);
 										positionsFound.add(cellValue);
 									}
 									//printing seasonPlayer
 									String sPPrint = "\ninsert into SeasonPlayer \n(season_id,player_id) \nvalues \n"
 											+ "(" + 0 + "," + playerSeqCounter + ");";
 									System.out.println(sPPrint);
+									out.println(sPPrint);
 									//printing sPP
-								
+
 									for(int i = 0; i < positionsFound.size(); i++){
 										if(positionsFound.get(i)==cellValue) {
 											positionSeqCounter = i;
 										}
 									}
-									
+
 									String sPPPrint = "\ninsert into SeasonPlayerPosition \n(season_id,player_id,posid) \nvalues \n"
 											+ "(" + 0 + "," + playerSeqCounter + "," + positionSeqCounter + ");";
 									System.out.println(sPPPrint);
+									out.println(sPPPrint);
 									//increment after all prints done for a row
-									
+
 								}
 							}
 						}
@@ -219,33 +232,34 @@ public class ExcelReader {
 						String sPPSPrint = "\ninsert into SeasonPlayerPositionStat \n(season_id,player_id,posid,stat_id,stat_value) \nvalues \n"
 								+ "(" + 0 + "," + playerSeqCounter + "," + positionSeqCounter + "," + (columnCounter - stat_start) + "," + cellValue + ");";
 						System.out.println(sPPSPrint);
+						out.println(sPPSPrint);
 					}
 					columnCounter++;
-					}
+				}
 				// print SQL FOR STAT INSERTS
-				
+
 				//PRINT SQL FOR PLAYER INSERTS
-				
+
 				//PRINT
 				if(rowCounter > 2) {
 					playerSeqCounter++;
 				}
 				rowCounter++;
-				}
-			sheetCounter++;
 			}
+			sheetCounter++;
+		}
 
 		/*
-		
+
 		//ITERATING SHEETS: while loop obtaining individual sheets from file
 		while (sheetIterator.hasNext()) {
 			sheet = sheetIterator.next(); //obtain next sheet
-			
+
 			// ITERATING ROWS: internal while loop to iterate over individual rows in a sheet
 			rowIterator = sheet.rowIterator();
 			while (rowIterator.hasNext()) {
 				Row row = rowIterator.next(); //obtain next row
-				
+
 				// ITERATING CELLS: 3rd sub while loop iterating over each cell in a row
 				cellIterator = row.cellIterator();
 				while (cellIterator.hasNext()) {
@@ -291,7 +305,7 @@ public class ExcelReader {
 							}
 						}
 					}//end else in 3rd while
-					
+
 				}//end third while (cells)
 				columnCounter++;
 			}//end second while (rows)
@@ -301,14 +315,17 @@ public class ExcelReader {
 			//TODO: create season* classes
 			//TODO: add all classes to the database
 			rowCounter++;
-			
+
 		}//end first while (sheets)
-		
+
 	//END TEMP CODE FOR PROJECT
-	 * 
-	 */
+		 * 
+		 */
 
 		// Closing the workbook
 		workbook.close();
+
+		//close printer writer
+		out.close();
 	}
 }
