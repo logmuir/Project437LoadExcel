@@ -215,7 +215,7 @@ public class ExcelReader {
 										}
 									}
 
-									String sPPPrint = "\ninsert into SeasonPlayerPosition \n(season_id,player_id,posid) \nvalues \n"
+									String sPPPrint = "\ninsert into SeasonPlayerPosition \n(seasonid,playerid,posid) \nvalues \n"
 											+ "(" + 0 + "," + playerSeqCounter + "," + positionSeqCounter + ");";
 									System.out.println(sPPPrint);
 									out.println(sPPPrint);
@@ -233,7 +233,7 @@ public class ExcelReader {
 						}
 					}
 					if(columnCounter >= stat_start && rowCounter>2 && columnCounter <= stat_final) {
-						String sPPSPrint = "\ninsert into SeasonPlayerPositionStat \n(season_id,player_id,posid,stat_id,stat_value) \nvalues \n"
+						String sPPSPrint = "\ninsert into SeasonPlayerPositionStat \n(seasonid,playerid,posid,statid,stat_value) \nvalues \n"
 								+ "(" + 0 + "," + playerSeqCounter + "," + positionSeqCounter + "," + (columnCounter - stat_start) + ",(select CAST( '" + cellValue  + "' AS " + statCastAsValues.get(columnCounter - stat_start) + ") from dual)" + ");";                                   
 						System.out.println(sPPSPrint);
 						out.println(sPPSPrint);
